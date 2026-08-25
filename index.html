@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraeCode - פלטפורמת יצירת משחקים ב-AI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap');
+        body { font-family: 'Assistant', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-indigo-500 to-cyan-400 p-2 rounded-xl text-slate-950 font-bold text-xl shadow-lg shadow-indigo-500/20">
+                <i class="fa-solid fa-code"></i>
+            </div>
+            <span class="text-xl font-bold tracking-wide bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">TraeCode <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-500/30">Games Studio</span></span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="alert('הפרויקט נשמר בהצלחה!')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-floppy-disk"></i> שמור פרויקט
+            </button>
+            <button onclick="launchGame()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 shadow-lg shadow-indigo-600/30">
+                <i class="fa-solid fa-play"></i> הרץ משחק
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 max-w-[1600px] w-full mx-auto">
+        
+        <!-- Sidebar: Templates & Tools (Col 3) -->
+        <aside class="lg:col-span-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col gap-6">
+            <div>
+                <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">תבניות משחק מהירות</h2>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="loadTemplate('platformer')" class="text-right p-3 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 transition flex items-center gap-3 group">
+                        <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:scale-110 transition"><i class="fa-solid fa-person-running"></i></div>
+                        <div>
+                            <div class="font-semibold text-sm">משחק פלטפורמה (Mario Style)</div>
+                            <div class="text-xs text-slate-400">קפיצות, שלבים ומכשולים</div>
+                        </div>
+                    </button>
+                    <button onclick="loadTemplate('shooter')" class="text-right p-3 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 transition flex items-center gap-3 group">
+                        <div class="p-2 rounded-lg bg-rose-500/10 text-rose-400 group-hover:scale-110 transition"><i class="fa-solid fa-crosshairs"></i></div>
+                        <div>
+                            <div class="font-semibold text-sm">משחק יריות בחלל</div>
+                            <div class="text-xs text-slate-400">השמדת מטאורים וחייזרים</div>
+                        </div>
+                    </button>
+                    <button onclick="loadTemplate('puzzle')" class="text-right p-3 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 transition flex items-center gap-3 group">
+                        <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400 group-hover:scale-110 transition"><i class="fa-solid fa-puzzle-piece"></i></div>
+                        <div>
+                            <div class="font-semibold text-sm">משחק זיכרון / פאזל</div>
+                            <div class="text-xs text-slate-400">התאמת זוגות קלפים</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-4 flex-1 flex flex-col">
+                <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">הגדרות עולם</h2>
+                <div class="space-y-4 text-sm">
+                    <div>
+                        <label class="text-slate-400 block mb-1">סגנון גרפי</label>
+                        <select class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200 outline-none focus:border-indigo-500">
+                            <option>Pixel Art (רטרו)</option>
+                            <option>Vector / Minimalist</option>
+                            <option>Cyberpunk Neon</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-slate-400 block mb-1">רמת קושי</label>
+                        <input type="range" min="1" max="5" value="3" class="w-full accent-indigo-500">
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: Trae AI Chat Builder (Col 5) -->
+        <section class="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-2xl flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i>
+                    <span class="font-bold text-sm">Trae Builder Agent</span>
+                </div>
+                <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">מחובר (Claude 3.7 / GPT-4o)</span>
+            </div>
+            
+            <!-- Chat Messages Area -->
+            <div id="chat-container" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm max-h-[500px]">
+                <div class="flex gap-3 items-start">
+                    <div class="bg-indigo-600 p-2 rounded-lg text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-slate-800 border border-slate-700/60 p-3 rounded-2xl rounded-tr-none text-slate-200 leading-relaxed">
+                        הי! אני עוזר הפיתוח החכם שלך ב-TraeCode. איזה סוג משחק תרצה ליצור היום? תוכל לבחור תבנית משמאל או לכתוב לי הנחיה חופשית (למשל: "צור משחק נחש רטרו עם צבעי ניאון").
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="p-3 border-t border-slate-800 bg-slate-900/50">
+                <form id="chat-form" onsubmit="handleSendMessage(event)" class="flex gap-2">
+                    <input type="text" id="user-input" placeholder="תאר שינוי או משחק חדש שהיית רוצה ליצור..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-indigo-500">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl transition flex items-center justify-center">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Right: Live Webview Preview (Col 4) -->
+        <section class="lg:col-span-4 bg-slate-900/80 border border-slate-800 rounded-2xl flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-display text-cyan-400"></i>
+                    <span class="font-bold text-sm">תצוגה מקדימה (Webview)</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                </div>
+            </div>
+            
+            <div class="flex-1 bg-slate-950 flex flex-col items-center justify-center p-6 relative min-h-[350px]">
+                <div id="preview-screen" class="text-center space-y-3">
+                    <div class="w-16 h-16 bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-xl">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-300">המשחק מוכן להרצה</h3>
+                    <p class="text-xs text-slate-500 max-w-[220px]">בחר תבנית או בקש מה-AI לבנות את קוד המשחק כדי לראות אותו פועל כאן בזמן אמת.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        function loadTemplate(type) {
+            const container = document.getElementById('chat-container');
+            let msg = "";
+            let previewText = "";
+
+            if(type === 'platformer') {
+                msg = "טען עבורי תבנית משחק פלטפורמה. צור לוגיקה של כוח משיכה, שחקן קופץ ומכשולים זזים.";
+                previewText = "🎮 משחק פלטפורמה טעון בהצלחה! השתמש במקצי החיצים כדי לזוז.";
+            } else if(type === 'shooter') {
+                msg = "צור משחק יריות חלליות שבו צריך להשמדת מטאורים שנופלים מלמעלה.";
+                previewText = "🚀 משחק יריות חלל פעיל! לחץ על רווח כדי לירות.";
+            } else if(type === 'puzzle') {
+                msg = "צור משחק זיכרון מבוסס קלפים עם אנימציות היפוך חלקות.";
+                previewText = "🧩 משחק פאזל זיכרון מוכן למשחק!";
+            }
+
+            // Append user message
+            container.innerHTML += `
+                <div class="flex gap-3 items-start justify-end">
+                    <div class="bg-slate-800 border border-slate-700/60 p-3 rounded-2xl rounded-tl-none text-slate-200 leading-relaxed">${msg}</div>
+                    <div class="bg-slate-700 p-2 rounded-lg text-white text-xs"><i class="fa-solid fa-user"></i></div>
+                </div>
+            `;
+
+            // Simulate AI response
+            setTimeout(() => {
+                container.innerHTML += `
+                    <div class="flex gap-3 items-start">
+                        <div class="bg-indigo-600 p-2 rounded-lg text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-800 border border-slate-700/60 p-3 rounded-2xl rounded-tr-none text-slate-200 leading-relaxed">
+                            הקוד נוצר בהצלחה והוחל בסביבת ה-Workspace! תוכל לראות את התוצאה בחלון התצוגה המקדימה משמאל.
+                        </div>
+                    </div>
+                `;
+                container.scrollTop = container.scrollHeight;
+                document.getElementById('preview-screen').innerHTML = `
+                    <div class="text-emerald-400 font-bold text-base bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 rounded-xl shadow-lg">
+                        ${previewText}
+                    </div>
+                `;
+            }, 800);
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function handleSendMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById('user-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            const container = document.getElementById('chat-container');
+            container.innerHTML += `
+                <div class="flex gap-3 items-start justify-end">
+                    <div class="bg-slate-800 border border-slate-700/60 p-3 rounded-2xl rounded-tl-none text-slate-200 leading-relaxed">${text}</div>
+                    <div class="bg-slate-700 p-2 rounded-lg text-white text-xs"><i class="fa-solid fa-user"></i></div>
+                </div>
+            `;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                container.innerHTML += `
+                    <div class="flex gap-3 items-start">
+                        <div class="bg-indigo-600 p-2 rounded-lg text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-800 border border-slate-700/60 p-3 rounded-2xl rounded-tr-none text-slate-200 leading-relaxed">
+                            עיבדתי את הבקשה שלך ("${text}"). עדכנתי את קבצי ה-HTML וה-JS בפרויקט.
+                        </div>
+                    </div>
+                `;
+                container.scrollTop = container.scrollHeight;
+            }, 1000);
+        }
+
+        function launchGame() {
+            alert('מפעיל את המשחק במסך מלא...');
+        }
+    </script>
+</body>
+</html>
